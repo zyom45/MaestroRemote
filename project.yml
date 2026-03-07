@@ -30,3 +30,15 @@ targets:
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         INFOPLIST_FILE: MaestroRemote/Info.plist
         SWIFT_STRICT_CONCURRENCY: minimal
+
+  MaestroRemoteTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: MaestroRemoteTests
+    dependencies:
+      - target: MaestroRemote
+    settings:
+      base:
+        SWIFT_VERSION: "5.0"
+        PRODUCT_BUNDLE_IDENTIFIER: com.maestro.MaestroRemoteTests

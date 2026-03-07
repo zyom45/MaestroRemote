@@ -13,6 +13,10 @@ class MaestroClient: ObservableObject {
         didSet { UserDefaults.standard.set(baseURL, forKey: "maestro.baseURL") }
     }
 
+    /// テストで差し替え可能な URLSession
+    static var urlSession: URLSession = .shared
+    private var session: URLSession { MaestroClient.urlSession }
+
     private var pollTask: Task<Void, Never>?
 
     // MARK: - Polling
@@ -37,7 +41,7 @@ class MaestroClient: ObservableObject {
         guard !baseURL.isEmpty,
               let url = URL(string: "\(baseURL)/pending") else { return }
         do {
-            let (data, response) = try await URLSession.shared.data(from: url)
+            let (data, response) = try await session.data(from: url)
             guard (response as? HTTPURLResponse)?.statusCode == 200 else {
                 isConnected = false; return
             }
@@ -63,7 +67,7 @@ class MaestroClient: ObservableObject {
             "action": action
         ])
         do {
-            let (data, _) = try await URLSession.shared.data(for: req)
+            let (data, _) = try await session.data(for: req)
             if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                json["ok"] as? Bool == true || json["status"] as? String == "ok" {
                 pendingPermissions.removeAll { $0.id == id }

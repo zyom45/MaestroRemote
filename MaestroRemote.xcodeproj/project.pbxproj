@@ -7,21 +7,36 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		24FE822FC35790D2C9EDBC91 /* MockURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67491675F73D337B125E80D8 /* MockURLProtocol.swift */; };
 		27A01AE91A9AD53103D32C47 /* PermissionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FECD1817E7A0F464ED0E9E15 /* PermissionCard.swift */; };
 		3871F00E3B20A1E49626738D /* SetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AF6105FCDF9A7BDD322AFBE /* SetupView.swift */; };
 		416664B8D16BA9FBB016CAD5 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 99321D6D0C80D0F6A13C9B31 /* Preview Assets.xcassets */; };
 		438A3EED148B8136B17EE358 /* MaestroClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 750702F16DA5975CB1C086F8 /* MaestroClient.swift */; };
 		88085BCA35C927906BC2EDFE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD4C9F026587DB109860347 /* ContentView.swift */; };
+		9161042E897CD40569FEC76D /* MaestroClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AC502258064B78546A2AFD /* MaestroClientTests.swift */; };
 		AA93F916BADE24A0E678767D /* MaestroRemoteApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11B1556CEFDD2107E28099A /* MaestroRemoteApp.swift */; };
 		BAF6CE1C548EA51DDDA2F802 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 974466D4F99EA7F651A998C7 /* Assets.xcassets */; };
 		EBA4C4EA0F83A72EA73F0962 /* BonjourBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13E269E9C861993AB307EC61 /* BonjourBrowser.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		FE0F9DCB3316539063F6F3AF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 4C8994E0B2EDD94FE40A5323 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9F474650C9243B76F67A70CF;
+			remoteInfo = MaestroRemote;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		0CE0FEBA3963C1356153139E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		13E269E9C861993AB307EC61 /* BonjourBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BonjourBrowser.swift; sourceTree = "<group>"; };
 		1AF6105FCDF9A7BDD322AFBE /* SetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupView.swift; sourceTree = "<group>"; };
+		26AC502258064B78546A2AFD /* MaestroClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaestroClientTests.swift; sourceTree = "<group>"; };
 		2B0ABA74BC6BCA5F9C571FC3 /* MaestroRemote.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = MaestroRemote.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3D34F1F8485889B3A6388399 /* MaestroRemoteTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = MaestroRemoteTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		67491675F73D337B125E80D8 /* MockURLProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLProtocol.swift; sourceTree = "<group>"; };
 		750702F16DA5975CB1C086F8 /* MaestroClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaestroClient.swift; sourceTree = "<group>"; };
 		8CD4C9F026587DB109860347 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		974466D4F99EA7F651A998C7 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -35,6 +50,7 @@
 			isa = PBXGroup;
 			children = (
 				2B0ABA74BC6BCA5F9C571FC3 /* MaestroRemote.app */,
+				3D34F1F8485889B3A6388399 /* MaestroRemoteTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -59,8 +75,18 @@
 			isa = PBXGroup;
 			children = (
 				33EB9F97A1AD10AE91A0A38B /* MaestroRemote */,
+				789B4969F83BC7E77DF220AC /* MaestroRemoteTests */,
 				13D0FACF64D1E12A3B7CDBB2 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		789B4969F83BC7E77DF220AC /* MaestroRemoteTests */ = {
+			isa = PBXGroup;
+			children = (
+				26AC502258064B78546A2AFD /* MaestroClientTests.swift */,
+				67491675F73D337B125E80D8 /* MockURLProtocol.swift */,
+			);
+			path = MaestroRemoteTests;
 			sourceTree = "<group>";
 		};
 		8CD077E7062F517206C557E0 /* Preview Content */ = {
@@ -92,6 +118,24 @@
 			productReference = 2B0ABA74BC6BCA5F9C571FC3 /* MaestroRemote.app */;
 			productType = "com.apple.product-type.application";
 		};
+		C3ED86F5AADAF180035C9FE4 /* MaestroRemoteTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 99069E69F80BE4A660182956 /* Build configuration list for PBXNativeTarget "MaestroRemoteTests" */;
+			buildPhases = (
+				A886DAFE39D765D2AA4376F4 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				3314EFFA8BB8F82EC6114C08 /* PBXTargetDependency */,
+			);
+			name = MaestroRemoteTests;
+			packageProductDependencies = (
+			);
+			productName = MaestroRemoteTests;
+			productReference = 3D34F1F8485889B3A6388399 /* MaestroRemoteTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -116,6 +160,7 @@
 			projectRoot = "";
 			targets = (
 				9F474650C9243B76F67A70CF /* MaestroRemote */,
+				C3ED86F5AADAF180035C9FE4 /* MaestroRemoteTests */,
 			);
 		};
 /* End PBXProject section */
@@ -146,7 +191,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A886DAFE39D765D2AA4376F4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9161042E897CD40569FEC76D /* MaestroClientTests.swift in Sources */,
+				24FE822FC35790D2C9EDBC91 /* MockURLProtocol.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		3314EFFA8BB8F82EC6114C08 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9F474650C9243B76F67A70CF /* MaestroRemote */;
+			targetProxy = FE0F9DCB3316539063F6F3AF /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		129148F9C9F8CB9D43C47F43 /* Release */ = {
@@ -250,6 +312,23 @@
 			};
 			name = Debug;
 		};
+		B5C636E73785B4AB507FC8EC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.maestro.MaestroRemoteTests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MaestroRemote.app/MaestroRemote";
+			};
+			name = Debug;
+		};
 		CAE98B9B68C77FE60E8AF605 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -306,6 +385,23 @@
 			};
 			name = Release;
 		};
+		FEEC079E2E0B27DFD7B5099A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.maestro.MaestroRemoteTests;
+				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MaestroRemote.app/MaestroRemote";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -314,6 +410,15 @@
 			buildConfigurations = (
 				546773F8422A5F12070986A7 /* Debug */,
 				129148F9C9F8CB9D43C47F43 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		99069E69F80BE4A660182956 /* Build configuration list for PBXNativeTarget "MaestroRemoteTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B5C636E73785B4AB507FC8EC /* Debug */,
+				FEEC079E2E0B27DFD7B5099A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
