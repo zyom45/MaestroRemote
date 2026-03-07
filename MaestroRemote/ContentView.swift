@@ -3,6 +3,7 @@ import SwiftUI
 struct ContentView: View {
     @StateObject private var client = MaestroClient()
     @State private var showSetup = false
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         NavigationStack {
@@ -36,8 +37,26 @@ struct ContentView: View {
         .sheet(isPresented: $showSetup) {
             SetupView(client: client)
         }
-        .onAppear { client.startPolling() }
+        .onAppear {
+            client.startPolling()
+            NotificationManager.shared.client = client
+        }
         .onDisappear { client.stopPolling() }
+        .onChange(of: scenePhase) { _, phase in
+            switch phase {
+            case .background:
+                // バックグラウンド移行時: pending 全件を通知として発火（バッジ含む）
+                NotificationManager.shared.notifyAllPending(
+                    client.pendingPermissions,
+                    baseURL: client.baseURL
+                )
+            case .active:
+                // フォアグラウンド復帰時: 通知センターとバッジをクリア
+                NotificationManager.shared.cancelAllAndResetBadge()
+            default:
+                break
+            }
+        }
     }
 
     private var connectionBadge: some View {

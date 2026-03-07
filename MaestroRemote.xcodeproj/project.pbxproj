@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 77;
+	objectVersion = 63;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -15,6 +15,7 @@
 		88085BCA35C927906BC2EDFE /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD4C9F026587DB109860347 /* ContentView.swift */; };
 		9161042E897CD40569FEC76D /* MaestroClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26AC502258064B78546A2AFD /* MaestroClientTests.swift */; };
 		AA93F916BADE24A0E678767D /* MaestroRemoteApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11B1556CEFDD2107E28099A /* MaestroRemoteApp.swift */; };
+		C7D8E9F0A1B2C3D4E5F60719 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8E9F0A1B2C3D4E5F6071829 /* NotificationManager.swift */; };
 		BAF6CE1C548EA51DDDA2F802 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 974466D4F99EA7F651A998C7 /* Assets.xcassets */; };
 		EBA4C4EA0F83A72EA73F0962 /* BonjourBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13E269E9C861993AB307EC61 /* BonjourBrowser.swift */; };
 /* End PBXBuildFile section */
@@ -34,7 +35,7 @@
 		13E269E9C861993AB307EC61 /* BonjourBrowser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BonjourBrowser.swift; sourceTree = "<group>"; };
 		1AF6105FCDF9A7BDD322AFBE /* SetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SetupView.swift; sourceTree = "<group>"; };
 		26AC502258064B78546A2AFD /* MaestroClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaestroClientTests.swift; sourceTree = "<group>"; };
-		2B0ABA74BC6BCA5F9C571FC3 /* MaestroRemote.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = MaestroRemote.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B0ABA74BC6BCA5F9C571FC3 /* MaestroRemote.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MaestroRemote.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D34F1F8485889B3A6388399 /* MaestroRemoteTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = MaestroRemoteTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		67491675F73D337B125E80D8 /* MockURLProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockURLProtocol.swift; sourceTree = "<group>"; };
 		750702F16DA5975CB1C086F8 /* MaestroClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaestroClient.swift; sourceTree = "<group>"; };
@@ -43,6 +44,7 @@
 		99321D6D0C80D0F6A13C9B31 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		F11B1556CEFDD2107E28099A /* MaestroRemoteApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaestroRemoteApp.swift; sourceTree = "<group>"; };
 		FECD1817E7A0F464ED0E9E15 /* PermissionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionCard.swift; sourceTree = "<group>"; };
+		D8E9F0A1B2C3D4E5F6071829 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -64,6 +66,7 @@
 				0CE0FEBA3963C1356153139E /* Info.plist */,
 				750702F16DA5975CB1C086F8 /* MaestroClient.swift */,
 				F11B1556CEFDD2107E28099A /* MaestroRemoteApp.swift */,
+				D8E9F0A1B2C3D4E5F6071829 /* NotificationManager.swift */,
 				FECD1817E7A0F464ED0E9E15 /* PermissionCard.swift */,
 				1AF6105FCDF9A7BDD322AFBE /* SetupView.swift */,
 				8CD077E7062F517206C557E0 /* Preview Content */,
@@ -155,7 +158,6 @@
 			);
 			mainGroup = 50A3AC2D23B69623A850978B;
 			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -186,6 +188,7 @@
 				88085BCA35C927906BC2EDFE /* ContentView.swift in Sources */,
 				438A3EED148B8136B17EE358 /* MaestroClient.swift in Sources */,
 				AA93F916BADE24A0E678767D /* MaestroRemoteApp.swift in Sources */,
+				C7D8E9F0A1B2C3D4E5F60719 /* NotificationManager.swift in Sources */,
 				27A01AE91A9AD53103D32C47 /* PermissionCard.swift in Sources */,
 				3871F00E3B20A1E49626738D /* SetupView.swift in Sources */,
 			);
@@ -217,6 +220,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = 8958MYBR87;
 				INFOPLIST_FILE = MaestroRemote/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -299,6 +303,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				DEVELOPMENT_TEAM = 8958MYBR87;
 				INFOPLIST_FILE = MaestroRemote/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

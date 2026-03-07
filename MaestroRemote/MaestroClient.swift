@@ -71,6 +71,7 @@ class MaestroClient: ObservableObject {
             if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
                json["ok"] as? Bool == true || json["status"] as? String == "ok" {
                 pendingPermissions.removeAll { $0.id == id }
+                NotificationManager.shared.cancelNotification(for: id)
                 return true
             }
         } catch {}
