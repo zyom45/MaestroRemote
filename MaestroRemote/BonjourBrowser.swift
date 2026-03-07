@@ -77,16 +77,14 @@ class BonjourBrowser: ObservableObject {
     private func resolveIP(_ result: NWBrowser.Result) async -> String? {
         await withCheckedContinuation { continuation in
             let conn = NWConnection(to: result.endpoint, using: .tcp)
-            var resolved = false
+            let box = ResolveBox()
 
             conn.stateUpdateHandler = { state in
                 switch state {
                 case .ready:
-                    guard !resolved else { return }
-                    resolved = true
+                    guard box.resolve() else { return }
                     let ip: String?
                     if case .hostPort(let host, _) = conn.currentPath?.remoteEndpoint {
-                        // Strip IPv6 zone ID or interface suffix
                         let raw = "\(host)"
                         ip = raw.components(separatedBy: "%").first
                             .map { $0.trimmingCharacters(in: .whitespaces) }
@@ -96,8 +94,7 @@ class BonjourBrowser: ObservableObject {
                     conn.cancel()
                     continuation.resume(returning: ip)
                 case .failed, .cancelled:
-                    guard !resolved else { return }
-                    resolved = true
+                    guard box.resolve() else { return }
                     conn.cancel()
                     continuation.resume(returning: nil)
                 default: break
@@ -105,13 +102,22 @@ class BonjourBrowser: ObservableObject {
             }
             conn.start(queue: .global(qos: .userInitiated))
 
-            // Timeout after 4 seconds
             DispatchQueue.global().asyncAfter(deadline: .now() + 4) {
-                guard !resolved else { return }
-                resolved = true
+                guard box.resolve() else { return }
                 conn.cancel()
                 continuation.resume(returning: nil)
             }
         }
+    }
+}
+
+// Thread-safe one-shot flag for async resolve
+private final class ResolveBox: @unchecked Sendable {
+    private let lock = NSLock()
+    private var done = false
+    func resolve() -> Bool {
+        lock.lock(); defer { lock.unlock() }
+        if done { return false }
+        done = true; return true
     }
 }
