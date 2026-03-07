@@ -1,0 +1,14 @@
+# Xcode
+*.xcuserdata/
+*.xcworkspace/
+DerivedData/
+.build/
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# macOS
+.DS_Store
+
+# xcodegen (regenerable)
+# MaestroRemote.xcodeproj is committed for Xcode opening convenience
