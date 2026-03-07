@@ -91,8 +91,6 @@ class MaestroClient: ObservableObject {
         let cwd: String
         let sessionId: String
         let enqueuedAt: String
-        var aiSuggestion: String?
-        var aiReason: String?
 
         var toolEmoji: String {
             switch toolName {

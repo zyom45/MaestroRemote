@@ -25,8 +25,6 @@ struct PermissionCard: View {
                     Image(systemName: "checkmark.circle.fill")
                         .foregroundStyle(.green)
                         .font(.title3)
-                } else if let suggestion = perm.aiSuggestion, !suggestion.isEmpty {
-                    aiSuggestionBadge(suggestion)
                 }
             }
 
@@ -40,14 +38,6 @@ struct PermissionCard: View {
                     .background(Color(.secondarySystemBackground))
                     .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
                     .lineLimit(5)
-            }
-
-            // AI reason (if any)
-            if let reason = perm.aiReason, !reason.isEmpty {
-                Text(reason)
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .italic()
             }
 
             // Action buttons
@@ -81,23 +71,4 @@ struct PermissionCard: View {
         .tint(color)
     }
 
-    @ViewBuilder
-    private func aiSuggestionBadge(_ suggestion: String) -> some View {
-        let allow = suggestion == "yes"
-        HStack(spacing: 3) {
-            Image(systemName: "cpu")
-                .font(.caption2)
-            Text(allow ? "AI: Allow" : "AI: Deny")
-                .font(.caption2)
-                .fontWeight(.medium)
-        }
-        .foregroundStyle(allow ? Color.green : Color.red)
-        .padding(.horizontal, 7)
-        .padding(.vertical, 3)
-        .background(
-            Capsule()
-                .fill((allow ? Color.green : Color.red).opacity(0.1))
-                .overlay(Capsule().strokeBorder((allow ? Color.green : Color.red).opacity(0.3), lineWidth: 0.5))
-        )
-    }
 }
