@@ -8,7 +8,14 @@ final class NotificationManager: NSObject {
     private let categoryID = "PERMISSION_REQUEST"
     private var notifiedIDs: Set<UUID> = []
 
+    /// バックグラウンド中かどうか（fetchPending での即時通知判定に使用）
+    var isInBackground: Bool = false
+
+    /// 接続中の Mac への baseURL（トークン送信に使用）
     weak var client: MaestroClient?
+
+    /// APNs デバイストークン
+    private(set) var deviceToken: String? = UserDefaults.standard.string(forKey: "apns.deviceToken")
 
     private override init() {
         super.init()
@@ -28,9 +35,9 @@ final class NotificationManager: NSObject {
     }
 
     private func registerCategory() {
-        let noAction         = UNNotificationAction(identifier: "no",             title: "✕ No",            options: [.destructive])
-        let yesAction        = UNNotificationAction(identifier: "yes",            title: "✓ Yes",           options: [])
-        let dontAskAction    = UNNotificationAction(identifier: "dont_ask_again", title: "Don't Ask Again", options: [])
+        let noAction      = UNNotificationAction(identifier: "no",             title: "✕ No",            options: [.destructive])
+        let yesAction     = UNNotificationAction(identifier: "yes",            title: "✓ Yes",           options: [])
+        let dontAskAction = UNNotificationAction(identifier: "dont_ask_again", title: "Don't Ask Again", options: [])
         let category = UNNotificationCategory(
             identifier: categoryID,
             actions: [noAction, yesAction, dontAskAction],
@@ -40,24 +47,57 @@ final class NotificationManager: NSObject {
         UNUserNotificationCenter.current().setNotificationCategories([category])
     }
 
-    // MARK: - Background: fire notifications for all pending permissions
+    // MARK: - APNs Device Token
 
-    /// バックグラウンド移行時に呼ぶ。notifiedIDs をリセットして全件通知する。
-    func notifyAllPending(_ permissions: [MaestroClient.Permission], baseURL: String) {
-        notifiedIDs.removeAll()
-        let total = permissions.count
-        for perm in permissions {
-            scheduleNotification(for: perm, baseURL: baseURL, badge: total)
+    /// AppDelegate から呼ばれる。トークンを保存して Mac へ送信する。
+    func didReceiveDeviceToken(_ token: String) async {
+        deviceToken = token
+        UserDefaults.standard.set(token, forKey: "apns.deviceToken")
+        if let baseURL = client?.baseURL, !baseURL.isEmpty {
+            await sendTokenToMac(token: token, baseURL: baseURL)
         }
     }
 
-    /// 個別に通知（ポーリング中の新着用。フォアグラウンドでは willPresent が抑制する）
-    func notify(for permission: MaestroClient.Permission, baseURL: String) {
-        guard !notifiedIDs.contains(permission.id) else { return }
-        scheduleNotification(for: permission, baseURL: baseURL, badge: 1)
+    /// 接続確立時（baseURL 設定後）に保存済みトークンを Mac へ送る。
+    func sendStoredTokenIfNeeded(baseURL: String) async {
+        guard let token = deviceToken, !baseURL.isEmpty else { return }
+        await sendTokenToMac(token: token, baseURL: baseURL)
     }
 
-    private func scheduleNotification(for permission: MaestroClient.Permission, baseURL: String, badge: Int) {
+    private func sendTokenToMac(token: String, baseURL: String) async {
+        guard let url = URL(string: "\(baseURL)/register-device") else { return }
+        var req = URLRequest(url: url)
+        req.httpMethod = "POST"
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.httpBody = try? JSONSerialization.data(withJSONObject: [
+            "deviceToken": token,
+            "bundleId": "com.maestro.MaestroRemote"
+        ])
+        _ = try? await URLSession.shared.data(for: req)
+    }
+
+    // MARK: - Local Notification Fallback
+    // APNs が未設定 / トークン未送信の間はローカル通知でカバー
+
+    /// バックグラウンド移行時: 未通知の pending を即時発火
+    func notifyAllPending(_ permissions: [MaestroClient.Permission], baseURL: String) {
+        let total = permissions.count
+        for perm in permissions {
+            scheduleLocalNotification(for: perm, baseURL: baseURL, badge: total)
+        }
+    }
+
+    /// fetchPending() から呼ばれる（バックグラウンド中のみ）
+    func notify(for permission: MaestroClient.Permission, baseURL: String) {
+        scheduleLocalNotification(for: permission, baseURL: baseURL, badge: 1)
+    }
+
+    private func scheduleLocalNotification(
+        for permission: MaestroClient.Permission,
+        baseURL: String,
+        badge: Int
+    ) {
+        guard !notifiedIDs.contains(permission.id) else { return }
         notifiedIDs.insert(permission.id)
 
         let content = UNMutableNotificationContent()
@@ -80,14 +120,18 @@ final class NotificationManager: NSObject {
         UNUserNotificationCenter.current().add(request)
     }
 
-    // MARK: - Foreground: clear notifications and reset state
+    /// ポーリングで解決済みと判明した permission の追跡IDを削除
+    func cleanupResolvedIDs(_ activeIDs: Set<UUID>) {
+        notifiedIDs = notifiedIDs.intersection(activeIDs)
+    }
 
-    /// フォアグラウンド復帰時に呼ぶ。通知センターとバッジをリセット。
+    // MARK: - Foreground Restoration
+
+    /// フォアグラウンド復帰時: 通知センターとバッジをクリア（notifiedIDs は保持）
     func cancelAllAndResetBadge() {
         UNUserNotificationCenter.current().removeAllDeliveredNotifications()
         UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
         UNUserNotificationCenter.current().setBadgeCount(0) { _ in }
-        notifiedIDs.removeAll()
     }
 
     /// 個別キャンセル（アプリ内で応答したとき）
@@ -103,7 +147,7 @@ final class NotificationManager: NSObject {
 
 extension NotificationManager: UNUserNotificationCenterDelegate {
 
-    /// フォアグラウンド中は通知バナーを抑制（アプリ内カードUIで表示するため）
+    /// フォアグラウンド中は通知バナーを抑制（アプリ内カードで表示するため）
     nonisolated func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         willPresent notification: UNNotification,
@@ -131,8 +175,7 @@ extension NotificationManager: UNUserNotificationCenterDelegate {
         case "yes":             action = "yes"
         case "dont_ask_again":  action = "dont_ask_again"
         default:
-            // 通知本体タップ → アプリをフォアグラウンドに出すだけ
-            completionHandler(); return
+            completionHandler(); return  // 通知本体タップ → アプリを前面に出すだけ
         }
 
         Task {

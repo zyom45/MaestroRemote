@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import UIKit
 
 @MainActor
 class MaestroClient: ObservableObject {
@@ -18,6 +19,7 @@ class MaestroClient: ObservableObject {
     private var session: URLSession { MaestroClient.urlSession }
 
     private var pollTask: Task<Void, Never>?
+    private var bgTaskID: UIBackgroundTaskIdentifier = .invalid
 
     // MARK: - Polling
 
@@ -49,8 +51,25 @@ class MaestroClient: ObservableObject {
             pendingPermissions = decoded.pending
             alwaysYes = decoded.alwaysYes
             autoPilot = decoded.autoPilot
+            let wasConnected = isConnected
             isConnected = true
             errorMessage = nil
+
+            let activeIDs = Set(decoded.pending.map { $0.id })
+            NotificationManager.shared.cleanupResolvedIDs(activeIDs)
+
+            // バックグラウンド中のみ: 未通知の新着 permission を即時通知
+            if NotificationManager.shared.isInBackground {
+                for perm in decoded.pending {
+                    NotificationManager.shared.notify(for: perm, baseURL: baseURL)
+                }
+            }
+
+            // 接続確立時: 保存済み APNs トークンを Mac へ送信
+            if !wasConnected {
+                let url = baseURL
+                Task { await NotificationManager.shared.sendStoredTokenIfNeeded(baseURL: url) }
+            }
         } catch {
             isConnected = false
             errorMessage = error.localizedDescription
@@ -84,6 +103,29 @@ class MaestroClient: ObservableObject {
         isConnected = false
         errorMessage = nil
         startPolling()
+    }
+
+    // MARK: - Background Task
+
+    /// バックグラウンド移行時に呼ぶ。約30秒間ポーリングを継続できる。
+    func startBackgroundTask() {
+        guard bgTaskID == .invalid else { return }
+        bgTaskID = UIApplication.shared.beginBackgroundTask(withName: "MaestroPolling") {
+            // タイムアウト直前: 残っている pending を通知してから終了
+            MainActor.assumeIsolated {
+                NotificationManager.shared.notifyAllPending(
+                    self.pendingPermissions,
+                    baseURL: self.baseURL
+                )
+                self.endBackgroundTask()
+            }
+        }
+    }
+
+    func endBackgroundTask() {
+        guard bgTaskID != .invalid else { return }
+        UIApplication.shared.endBackgroundTask(bgTaskID)
+        bgTaskID = .invalid
     }
 
     // MARK: - Models
