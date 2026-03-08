@@ -38,7 +38,7 @@ struct SessionLogView: View {
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     HStack {
-                        Text("\(session.turnCount) turns")
+                        if let tc = session.turnCount { Text("\(tc) turns") }
                             .font(.caption)
                             .foregroundStyle(.secondary)
                         Spacer()

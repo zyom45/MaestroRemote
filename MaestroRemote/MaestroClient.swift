@@ -212,14 +212,25 @@ class MaestroClient: ObservableObject {
         let projectName: String
         let projectDir: String
         let modifiedAt: String
-        let turnCount: Int
+        let turnCount: Int?
+    }
+
+    struct TurnItem: Codable {
+        let type: String       // "text" | "fileOp"
+        let content: String?   // text only
+        let kind: String?      // fileOp only
+        let path: String?      // fileOp only
     }
 
     struct TurnSummary: Identifiable, Codable {
         let id: String
         let userMessage: String
         let timestamp: String
-        let assistantText: String
+        let items: [TurnItem]
+
+        var assistantText: String {
+            items.compactMap { $0.type == "text" ? $0.content : nil }.joined(separator: "\n")
+        }
     }
 
     struct RulesPayload: Codable {
