@@ -86,14 +86,9 @@ struct HomeView: View {
     }
 
     private var connectionBadge: some View {
-        Label(
-            client.isConnected ? "Connected" : "Disconnected",
-            systemImage: "circle.fill"
-        )
-        .labelStyle(.titleAndIcon)
-        .font(.caption)
-        .foregroundStyle(client.isConnected ? Color.green : Color.red)
-        .lineLimit(1)
+        Circle()
+            .fill(client.isConnected ? Color.green : Color.red)
+            .frame(width: 10, height: 10)
     }
 }
 
