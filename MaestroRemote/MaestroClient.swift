@@ -236,12 +236,20 @@ class MaestroClient: ObservableObject {
     struct RulesPayload: Codable {
         let allowedTools: [String]
         let blockRules: [BlockRule]
+        let registeredProjects: [RegisteredProject]
 
         struct BlockRule: Identifiable, Codable {
             let id: String
             let toolName: String
             let pattern: String
             let note: String
+        }
+
+        struct RegisteredProject: Identifiable, Codable {
+            let id: String
+            let displayName: String
+            let allowedTools: [String]?   // nil = グローバルにフォールバック
+            let blockRules: [BlockRule]?  // nil = グローバルにフォールバック
         }
     }
 }

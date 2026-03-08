@@ -41,12 +41,13 @@ struct AllowListView: View {
 
     private var list: some View {
         List {
+            // グローバル allow list
             Section {
                 if rules?.allowedTools.isEmpty ?? true {
                     Text("No tools in allow list")
                         .foregroundStyle(.secondary)
                 } else {
-                    ForEach(rules?.allowedTools.sorted() ?? [], id: \.self) { tool in
+                    ForEach(rules?.allowedTools ?? [], id: \.self) { tool in
                         HStack {
                             Text(toolEmoji(tool))
                             Text(tool)
@@ -55,16 +56,34 @@ struct AllowListView: View {
                         }
                     }
                     .onDelete { indexSet in
-                        let sorted = rules?.allowedTools.sorted() ?? []
+                        let list = rules?.allowedTools ?? []
                         for i in indexSet {
-                            Task { await removeTool(sorted[i]) }
+                            Task { await removeTool(list[i]) }
                         }
                     }
                 }
             } header: {
-                Text("Auto-approved tools")
+                Text("Global")
             } footer: {
-                Text("These tools are approved automatically without asking.")
+                Text("Applied to all projects unless overridden.")
+            }
+
+            // プロジェクト別 allow list（設定があるもののみ表示）
+            ForEach(rules?.registeredProjects.filter { $0.allowedTools != nil } ?? []) { project in
+                Section {
+                    ForEach(project.allowedTools ?? [], id: \.self) { tool in
+                        HStack {
+                            Text(toolEmoji(tool))
+                            Text(tool)
+                                .font(.system(.body, design: .monospaced))
+                            Spacer()
+                        }
+                    }
+                } header: {
+                    Text(project.displayName)
+                } footer: {
+                    Text("Overrides global list for this project.")
+                }
             }
         }
         .listStyle(.insetGrouped)
