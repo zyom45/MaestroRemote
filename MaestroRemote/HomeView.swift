@@ -41,6 +41,15 @@ struct HomeView: View {
                     .buttonStyle(.plain)
 
                     NavigationLink {
+                        HistoryView().environmentObject(client)
+                    } label: {
+                        FeatureCard(title: "History",
+                                    icon: "clock.arrow.circlepath",
+                                    color: .purple)
+                    }
+                    .buttonStyle(.plain)
+
+                    NavigationLink {
                         AllowListView().environmentObject(client)
                     } label: {
                         FeatureCard(title: "Allow List",
@@ -55,15 +64,6 @@ struct HomeView: View {
                         FeatureCard(title: "Block List",
                                     icon: "xmark.shield.fill",
                                     color: .red)
-                    }
-                    .buttonStyle(.plain)
-
-                    NavigationLink {
-                        HistoryView().environmentObject(client)
-                    } label: {
-                        FeatureCard(title: "History",
-                                    icon: "clock.arrow.circlepath",
-                                    color: .purple)
                     }
                     .buttonStyle(.plain)
                 }
@@ -86,14 +86,14 @@ struct HomeView: View {
     }
 
     private var connectionBadge: some View {
-        HStack(spacing: 5) {
-            Circle()
-                .fill(client.isConnected ? Color.green : Color.red)
-                .frame(width: 8, height: 8)
-            Text(client.isConnected ? "Connected" : "Disconnected")
-                .font(.caption)
-                .foregroundStyle(.secondary)
-        }
+        Label(
+            client.isConnected ? "Connected" : "Disconnected",
+            systemImage: "circle.fill"
+        )
+        .labelStyle(.titleAndIcon)
+        .font(.caption)
+        .foregroundStyle(client.isConnected ? Color.green : Color.red)
+        .lineLimit(1)
     }
 }
 
