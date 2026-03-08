@@ -84,7 +84,7 @@ struct HistoryView: View {
         unavailable = false
         let result = await client.fetchHistory()
         unavailable = result.unavailable
-        records = result.records
+        records = result.items
         isLoading = false
     }
 

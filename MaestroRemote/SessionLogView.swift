@@ -87,7 +87,7 @@ struct SessionLogView: View {
         unavailable = false
         let result = await client.fetchSessions()
         unavailable = result.unavailable
-        sessions = result.sessions
+        sessions = result.items
         isLoading = false
     }
 

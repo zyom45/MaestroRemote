@@ -280,15 +280,15 @@ extension MaestroClient {
         return (items, false)
     }
 
-    func fetchHistory(limit: Int = 100) async -> (records: [HistoryRecord], unavailable: Bool) {
+    func fetchHistory(limit: Int = 100) async -> (items: [HistoryRecord], unavailable: Bool) {
         await fetchDataArray("\(baseURL)/api/history?limit=\(limit)")
     }
 
-    func fetchActivity(limit: Int = 200) async -> (records: [ActivityRecord], unavailable: Bool) {
+    func fetchActivity(limit: Int = 200) async -> (items: [ActivityRecord], unavailable: Bool) {
         await fetchDataArray("\(baseURL)/api/activity?limit=\(limit)")
     }
 
-    func fetchSessions() async -> (sessions: [SessionSummary], unavailable: Bool) {
+    func fetchSessions() async -> (items: [SessionSummary], unavailable: Bool) {
         await fetchDataArray("\(baseURL)/api/sessions")
     }
 

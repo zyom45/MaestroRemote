@@ -90,7 +90,7 @@ struct ActivityView: View {
         unavailable = false
         let result = await client.fetchActivity()
         unavailable = result.unavailable
-        records = result.records
+        records = result.items
         isLoading = false
     }
 
