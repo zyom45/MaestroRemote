@@ -10,5 +10,8 @@ DerivedData/
 # macOS
 .DS_Store
 
+# Claude Code local settings
+.claude/
+
 # xcodegen (regenerable)
 # MaestroRemote.xcodeproj is committed for Xcode opening convenience

@@ -45,11 +45,18 @@ struct ContentView: View {
         .onChange(of: scenePhase) { _, phase in
             switch phase {
             case .background:
-                // バックグラウンド移行時: pending 全件を通知として発火（バッジ含む）
-                NotificationManager.shared.notifyAllPending(
-                    client.pendingPermissions,
-                    baseURL: client.baseURL
-                )
+                // scenePhase が .background に変わっても OS がアプリを完全に
+                // バックグラウンドへ移行しきるまでわずかに時間がかかる。
+                // すぐに通知を発火すると willPresent（フォアグラウンド抑制）に
+                // 捕まりバナーが消えてバッジだけ残る現象が起きるため、少し待つ。
+                let permissions = client.pendingPermissions
+                let baseURL = client.baseURL
+                Task {
+                    try? await Task.sleep(nanoseconds: 1_500_000_000) // 1.5 秒待機
+                    await MainActor.run {
+                        NotificationManager.shared.notifyAllPending(permissions, baseURL: baseURL)
+                    }
+                }
             case .active:
                 // フォアグラウンド復帰時: 通知センターとバッジをクリア
                 NotificationManager.shared.cancelAllAndResetBadge()

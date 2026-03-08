@@ -16,7 +16,11 @@ class BonjourBrowser: ObservableObject {
         let port: Int
 
         var displayName: String { name }
-        var baseURL: String { "http://\(host):\(port)" }
+        var baseURL: String {
+            // IPv6 addresses need brackets in URLs
+            if host.contains(":") { return "http://[\(host)]:\(port)" }
+            return "http://\(host):\(port)"
+        }
     }
 
     func startBrowsing() {
@@ -76,7 +80,12 @@ class BonjourBrowser: ObservableObject {
 
     private func resolveIP(_ result: NWBrowser.Result) async -> String? {
         await withCheckedContinuation { continuation in
-            let conn = NWConnection(to: result.endpoint, using: .tcp)
+            // Force IPv4 — Mac server listens on 0.0.0.0 (IPv4 only)
+            let params = NWParameters.tcp
+            if let ipOpts = params.defaultProtocolStack.internetProtocol as? NWProtocolIP.Options {
+                ipOpts.version = .v4
+            }
+            let conn = NWConnection(to: result.endpoint, using: params)
             let box = ResolveBox()
 
             conn.stateUpdateHandler = { state in
