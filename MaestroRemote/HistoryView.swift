@@ -83,10 +83,8 @@ struct HistoryView: View {
         isLoading = true
         unavailable = false
         let result = await client.fetchHistory()
-        if result.isEmpty && !client.baseURL.isEmpty {
-            unavailable = true
-        }
-        records = result
+        unavailable = result.unavailable
+        records = result.records
         isLoading = false
     }
 

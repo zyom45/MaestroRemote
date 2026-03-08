@@ -238,6 +238,13 @@ class MaestroClient: ObservableObject {
         let blockRules: [BlockRule]
         let registeredProjects: [RegisteredProject]
 
+        init(from decoder: Decoder) throws {
+            let c = try decoder.container(keyedBy: CodingKeys.self)
+            allowedTools        = try c.decodeIfPresent([String].self,             forKey: .allowedTools)        ?? []
+            blockRules          = try c.decodeIfPresent([BlockRule].self,          forKey: .blockRules)          ?? []
+            registeredProjects  = try c.decodeIfPresent([RegisteredProject].self,  forKey: .registeredProjects)  ?? []
+        }
+
         struct BlockRule: Identifiable, Codable {
             let id: String
             let toolName: String
@@ -258,33 +265,43 @@ class MaestroClient: ObservableObject {
 
 extension MaestroClient {
 
-    func fetchHistory(limit: Int = 100) async -> [HistoryRecord] {
-        guard let url = URL(string: "\(baseURL)/api/history?limit=\(limit)") else { return [] }
-        guard let data = try? await session.data(from: url).0 else { return [] }
-        return (try? JSONDecoder().decode([HistoryRecord].self, from: data)) ?? []
+    /// Mac API は {"data": [...]} ラッパーで返す
+    private struct DataWrapper<T: Decodable>: Decodable {
+        let data: [T]
     }
 
-    func fetchActivity(limit: Int = 200) async -> [ActivityRecord] {
-        guard let url = URL(string: "\(baseURL)/api/activity?limit=\(limit)") else { return [] }
-        guard let data = try? await session.data(from: url).0 else { return [] }
-        return (try? JSONDecoder().decode([ActivityRecord].self, from: data)) ?? []
+    /// HTTP 200 → (data, false)、404/エラー → ([], true)
+    private func fetchDataArray<T: Decodable>(_ urlString: String) async -> (items: [T], unavailable: Bool) {
+        guard let url = URL(string: urlString) else { return ([], true) }
+        guard let (data, resp) = try? await session.data(from: url) else { return ([], true) }
+        let status = (resp as? HTTPURLResponse)?.statusCode ?? 0
+        guard status == 200 else { return ([], true) }
+        let items = (try? JSONDecoder().decode(DataWrapper<T>.self, from: data))?.data ?? []
+        return (items, false)
     }
 
-    func fetchSessions() async -> [SessionSummary] {
-        guard let url = URL(string: "\(baseURL)/api/sessions") else { return [] }
-        guard let data = try? await session.data(from: url).0 else { return [] }
-        return (try? JSONDecoder().decode([SessionSummary].self, from: data)) ?? []
+    func fetchHistory(limit: Int = 100) async -> (records: [HistoryRecord], unavailable: Bool) {
+        await fetchDataArray("\(baseURL)/api/history?limit=\(limit)")
+    }
+
+    func fetchActivity(limit: Int = 200) async -> (records: [ActivityRecord], unavailable: Bool) {
+        await fetchDataArray("\(baseURL)/api/activity?limit=\(limit)")
+    }
+
+    func fetchSessions() async -> (sessions: [SessionSummary], unavailable: Bool) {
+        await fetchDataArray("\(baseURL)/api/sessions")
     }
 
     func fetchTurns(sessionId: String, limit: Int = 50, offset: Int = 0) async -> [TurnSummary] {
         guard let url = URL(string: "\(baseURL)/api/sessions/\(sessionId)/turns?limit=\(limit)&offset=\(offset)") else { return [] }
-        guard let data = try? await session.data(from: url).0 else { return [] }
-        return (try? JSONDecoder().decode([TurnSummary].self, from: data)) ?? []
+        guard let (data, _) = try? await session.data(from: url) else { return [] }
+        return (try? JSONDecoder().decode(DataWrapper<TurnSummary>.self, from: data))?.data ?? []
     }
 
     func fetchRules() async -> RulesPayload? {
         guard let url = URL(string: "\(baseURL)/api/rules") else { return nil }
-        guard let data = try? await session.data(from: url).0 else { return nil }
+        guard let (data, resp) = try? await session.data(from: url) else { return nil }
+        guard (resp as? HTTPURLResponse)?.statusCode == 200 else { return nil }
         return try? JSONDecoder().decode(RulesPayload.self, from: data)
     }
 

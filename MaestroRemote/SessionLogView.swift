@@ -86,10 +86,8 @@ struct SessionLogView: View {
         isLoading = true
         unavailable = false
         let result = await client.fetchSessions()
-        if result.isEmpty && !client.baseURL.isEmpty {
-            unavailable = true
-        }
-        sessions = result
+        unavailable = result.unavailable
+        sessions = result.sessions
         isLoading = false
     }
 

@@ -89,10 +89,8 @@ struct ActivityView: View {
         isLoading = true
         unavailable = false
         let result = await client.fetchActivity()
-        if result.isEmpty && !client.baseURL.isEmpty {
-            unavailable = true
-        }
-        records = result
+        unavailable = result.unavailable
+        records = result.records
         isLoading = false
     }
 
