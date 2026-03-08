@@ -174,4 +174,131 @@ class MaestroClient: ObservableObject {
         let alwaysYes: Bool
         let autoPilot: Bool
     }
+
+    // MARK: - Dashboard Models
+
+    struct HistoryRecord: Identifiable, Codable {
+        let id: Int64
+        let timestamp: String
+        let project: String
+        let cwd: String
+        let toolName: String
+        let toolInput: String
+        let action: String
+        let duration: Double
+
+        var actionEmoji: String {
+            switch action {
+            case "yes":        return "✅"
+            case "no":         return "❌"
+            case "always_yes": return "⚡"
+            default:           return "💬"
+            }
+        }
+    }
+
+    struct ActivityRecord: Identifiable, Codable {
+        let id: Int64
+        let sessionId: String
+        let timestamp: String
+        let project: String
+        let cwd: String
+        let toolName: String
+        let toolInput: String
+    }
+
+    struct SessionSummary: Identifiable, Codable {
+        let id: String
+        let projectName: String
+        let projectDir: String
+        let modifiedAt: String
+        let turnCount: Int
+    }
+
+    struct TurnSummary: Identifiable, Codable {
+        let id: String
+        let userMessage: String
+        let timestamp: String
+        let assistantText: String
+    }
+
+    struct RulesPayload: Codable {
+        let allowedTools: [String]
+        let blockRules: [BlockRule]
+
+        struct BlockRule: Identifiable, Codable {
+            let id: String
+            let toolName: String
+            let pattern: String
+            let note: String
+        }
+    }
+}
+
+// MARK: - Dashboard API
+
+extension MaestroClient {
+
+    func fetchHistory(limit: Int = 100) async -> [HistoryRecord] {
+        guard let url = URL(string: "\(baseURL)/api/history?limit=\(limit)") else { return [] }
+        guard let data = try? await session.data(from: url).0 else { return [] }
+        return (try? JSONDecoder().decode([HistoryRecord].self, from: data)) ?? []
+    }
+
+    func fetchActivity(limit: Int = 200) async -> [ActivityRecord] {
+        guard let url = URL(string: "\(baseURL)/api/activity?limit=\(limit)") else { return [] }
+        guard let data = try? await session.data(from: url).0 else { return [] }
+        return (try? JSONDecoder().decode([ActivityRecord].self, from: data)) ?? []
+    }
+
+    func fetchSessions() async -> [SessionSummary] {
+        guard let url = URL(string: "\(baseURL)/api/sessions") else { return [] }
+        guard let data = try? await session.data(from: url).0 else { return [] }
+        return (try? JSONDecoder().decode([SessionSummary].self, from: data)) ?? []
+    }
+
+    func fetchTurns(sessionId: String, limit: Int = 50, offset: Int = 0) async -> [TurnSummary] {
+        guard let url = URL(string: "\(baseURL)/api/sessions/\(sessionId)/turns?limit=\(limit)&offset=\(offset)") else { return [] }
+        guard let data = try? await session.data(from: url).0 else { return [] }
+        return (try? JSONDecoder().decode([TurnSummary].self, from: data)) ?? []
+    }
+
+    func fetchRules() async -> RulesPayload? {
+        guard let url = URL(string: "\(baseURL)/api/rules") else { return nil }
+        guard let data = try? await session.data(from: url).0 else { return nil }
+        return try? JSONDecoder().decode(RulesPayload.self, from: data)
+    }
+
+    @discardableResult
+    func addAllow(tool: String) async -> Bool {
+        await postJSON(path: "/api/allow-list/add", body: ["tool": tool])
+    }
+
+    @discardableResult
+    func removeAllow(tool: String) async -> Bool {
+        await postJSON(path: "/api/allow-list/remove", body: ["tool": tool])
+    }
+
+    @discardableResult
+    func addBlockRule(toolName: String, pattern: String, note: String) async -> Bool {
+        await postJSON(path: "/api/block-list/add",
+                       body: ["toolName": toolName, "pattern": pattern, "note": note])
+    }
+
+    @discardableResult
+    func removeBlockRule(id: String) async -> Bool {
+        await postJSON(path: "/api/block-list/remove", body: ["id": id])
+    }
+
+    private func postJSON(path: String, body: [String: String]) async -> Bool {
+        guard let url = URL(string: "\(baseURL)\(path)") else { return false }
+        var req = URLRequest(url: url)
+        req.httpMethod = "POST"
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.httpBody = try? JSONSerialization.data(withJSONObject: body)
+        guard let (data, _) = try? await session.data(for: req),
+              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+        else { return false }
+        return json["status"] as? String == "ok" || json["ok"] as? Bool == true
+    }
 }

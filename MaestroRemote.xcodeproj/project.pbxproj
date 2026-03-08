@@ -9,6 +9,13 @@
 /* Begin PBXBuildFile section */
 		24FE822FC35790D2C9EDBC91 /* MockURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67491675F73D337B125E80D8 /* MockURLProtocol.swift */; };
 		27A01AE91A9AD53103D32C47 /* PermissionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FECD1817E7A0F464ED0E9E15 /* PermissionCard.swift */; };
+		A2B3C4D5E6F701A2B3C4D5E6 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B3C4D5E6F702A2B3C4D5E6 /* HomeView.swift */; };
+		A2B3C4D5E6F703A2B3C4D5E6 /* NotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B3C4D5E6F704A2B3C4D5E6 /* NotificationView.swift */; };
+		A2B3C4D5E6F705A2B3C4D5E6 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B3C4D5E6F706A2B3C4D5E6 /* HistoryView.swift */; };
+		A2B3C4D5E6F707A2B3C4D5E6 /* ActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B3C4D5E6F708A2B3C4D5E6 /* ActivityView.swift */; };
+		A2B3C4D5E6F709A2B3C4D5E6 /* AllowListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B3C4D5E6F70AA2B3C4D5E6 /* AllowListView.swift */; };
+		A2B3C4D5E6F70BA2B3C4D5E6 /* BlockListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B3C4D5E6F70CA2B3C4D5E6 /* BlockListView.swift */; };
+		A2B3C4D5E6F70DA2B3C4D5E6 /* SessionLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B3C4D5E6F70EA2B3C4D5E6 /* SessionLogView.swift */; };
 		3871F00E3B20A1E49626738D /* SetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AF6105FCDF9A7BDD322AFBE /* SetupView.swift */; };
 		416664B8D16BA9FBB016CAD5 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 99321D6D0C80D0F6A13C9B31 /* Preview Assets.xcassets */; };
 		438A3EED148B8136B17EE358 /* MaestroClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 750702F16DA5975CB1C086F8 /* MaestroClient.swift */; };
@@ -45,6 +52,13 @@
 		F11B1556CEFDD2107E28099A /* MaestroRemoteApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaestroRemoteApp.swift; sourceTree = "<group>"; };
 		FECD1817E7A0F464ED0E9E15 /* PermissionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionCard.swift; sourceTree = "<group>"; };
 		D8E9F0A1B2C3D4E5F6071829 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
+		A2B3C4D5E6F702A2B3C4D5E6 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		A2B3C4D5E6F704A2B3C4D5E6 /* NotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationView.swift; sourceTree = "<group>"; };
+		A2B3C4D5E6F706A2B3C4D5E6 /* HistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryView.swift; sourceTree = "<group>"; };
+		A2B3C4D5E6F708A2B3C4D5E6 /* ActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityView.swift; sourceTree = "<group>"; };
+		A2B3C4D5E6F70AA2B3C4D5E6 /* AllowListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllowListView.swift; sourceTree = "<group>"; };
+		A2B3C4D5E6F70CA2B3C4D5E6 /* BlockListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockListView.swift; sourceTree = "<group>"; };
+		A2B3C4D5E6F70EA2B3C4D5E6 /* SessionLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionLogView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -61,13 +75,20 @@
 			isa = PBXGroup;
 			children = (
 				974466D4F99EA7F651A998C7 /* Assets.xcassets */,
+				A2B3C4D5E6F708A2B3C4D5E6 /* ActivityView.swift */,
+				A2B3C4D5E6F70AA2B3C4D5E6 /* AllowListView.swift */,
 				13E269E9C861993AB307EC61 /* BonjourBrowser.swift */,
+				A2B3C4D5E6F70CA2B3C4D5E6 /* BlockListView.swift */,
 				8CD4C9F026587DB109860347 /* ContentView.swift */,
+				A2B3C4D5E6F706A2B3C4D5E6 /* HistoryView.swift */,
+				A2B3C4D5E6F702A2B3C4D5E6 /* HomeView.swift */,
 				0CE0FEBA3963C1356153139E /* Info.plist */,
 				750702F16DA5975CB1C086F8 /* MaestroClient.swift */,
 				F11B1556CEFDD2107E28099A /* MaestroRemoteApp.swift */,
 				D8E9F0A1B2C3D4E5F6071829 /* NotificationManager.swift */,
+				A2B3C4D5E6F704A2B3C4D5E6 /* NotificationView.swift */,
 				FECD1817E7A0F464ED0E9E15 /* PermissionCard.swift */,
+				A2B3C4D5E6F70EA2B3C4D5E6 /* SessionLogView.swift */,
 				1AF6105FCDF9A7BDD322AFBE /* SetupView.swift */,
 				8CD077E7062F517206C557E0 /* Preview Content */,
 			);
@@ -184,12 +205,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A2B3C4D5E6F707A2B3C4D5E6 /* ActivityView.swift in Sources */,
+				A2B3C4D5E6F709A2B3C4D5E6 /* AllowListView.swift in Sources */,
+				A2B3C4D5E6F70BA2B3C4D5E6 /* BlockListView.swift in Sources */,
 				EBA4C4EA0F83A72EA73F0962 /* BonjourBrowser.swift in Sources */,
 				88085BCA35C927906BC2EDFE /* ContentView.swift in Sources */,
+				A2B3C4D5E6F705A2B3C4D5E6 /* HistoryView.swift in Sources */,
+				A2B3C4D5E6F701A2B3C4D5E6 /* HomeView.swift in Sources */,
 				438A3EED148B8136B17EE358 /* MaestroClient.swift in Sources */,
 				AA93F916BADE24A0E678767D /* MaestroRemoteApp.swift in Sources */,
 				C7D8E9F0A1B2C3D4E5F60719 /* NotificationManager.swift in Sources */,
+				A2B3C4D5E6F703A2B3C4D5E6 /* NotificationView.swift in Sources */,
 				27A01AE91A9AD53103D32C47 /* PermissionCard.swift in Sources */,
+				A2B3C4D5E6F70DA2B3C4D5E6 /* SessionLogView.swift in Sources */,
 				3871F00E3B20A1E49626738D /* SetupView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
