@@ -1,5 +1,7 @@
 import SwiftUI
 
+// MARK: - Session List
+
 struct SessionLogView: View {
     @EnvironmentObject var client: MaestroClient
     @State private var sessions: [MaestroClient.SessionSummary] = []
@@ -37,17 +39,9 @@ struct SessionLogView: View {
                     Text(session.projectDir)
                         .font(.caption)
                         .foregroundStyle(.secondary)
-                    HStack {
-                        if let tc = session.turnCount {
-                            Text("\(tc) turns")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                        Spacer()
-                        Text(formatTimestamp(session.modifiedAt))
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    }
+                    Text(formatTimestamp(session.modifiedAt))
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
                 }
                 .padding(.vertical, 2)
             }
@@ -96,12 +90,12 @@ struct SessionLogView: View {
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         let date = formatter.date(from: iso) ?? ISO8601DateFormatter().date(from: iso) ?? Date()
         let rel = RelativeDateTimeFormatter()
-        rel.unitsStyle = .abbreviated
+        rel.unitsStyle = .full
         return rel.localizedString(for: date, relativeTo: Date())
     }
 }
 
-// MARK: - Session Turns
+// MARK: - Turns List
 
 struct SessionTurnsView: View {
     @EnvironmentObject var client: MaestroClient
@@ -125,25 +119,26 @@ struct SessionTurnsView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 List(turns) { turn in
-                    VStack(alignment: .leading, spacing: 8) {
-                        if !turn.userMessage.isEmpty {
-                            Text(turn.userMessage)
-                                .font(.subheadline)
-                                .fontWeight(.medium)
-                                .foregroundStyle(.blue)
-                                .lineLimit(3)
+                    NavigationLink {
+                        TurnDetailView(turn: turn)
+                    } label: {
+                        VStack(alignment: .leading, spacing: 4) {
+                            if !turn.userMessage.isEmpty {
+                                Text(turn.userMessage)
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                    .lineLimit(2)
+                            } else {
+                                Text("(no message)")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.tertiary)
+                            }
+                            Text(formatTimestamp(turn.timestamp))
+                                .font(.caption2)
+                                .foregroundStyle(.tertiary)
                         }
-                        if !turn.assistantText.isEmpty {
-                            Text(turn.assistantText)
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                                .lineLimit(4)
-                        }
-                        Text(formatTimestamp(turn.timestamp))
-                            .font(.caption2)
-                            .foregroundStyle(.tertiary)
+                        .padding(.vertical, 2)
                     }
-                    .padding(.vertical, 4)
                 }
                 .listStyle(.insetGrouped)
             }
@@ -165,7 +160,80 @@ struct SessionTurnsView: View {
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         let date = formatter.date(from: iso) ?? ISO8601DateFormatter().date(from: iso) ?? Date()
         let rel = RelativeDateTimeFormatter()
-        rel.unitsStyle = .abbreviated
+        rel.unitsStyle = .full
         return rel.localizedString(for: date, relativeTo: Date())
+    }
+}
+
+// MARK: - Turn Detail
+
+struct TurnDetailView: View {
+    let turn: MaestroClient.TurnSummary
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                // User message
+                if !turn.userMessage.isEmpty {
+                    VStack(alignment: .leading, spacing: 6) {
+                        Label("User", systemImage: "person.circle.fill")
+                            .font(.caption.bold())
+                            .foregroundStyle(.blue)
+                        Text(turn.userMessage)
+                            .font(.body)
+                            .textSelection(.enabled)
+                    }
+                    .padding()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(.blue.opacity(0.06), in: RoundedRectangle(cornerRadius: 12))
+                }
+
+                // Assistant items
+                ForEach(Array(turn.items.enumerated()), id: \.offset) { _, item in
+                    switch item.type {
+                    case "text":
+                        if let text = item.content, !text.isEmpty {
+                            VStack(alignment: .leading, spacing: 6) {
+                                Label("Assistant", systemImage: "sparkles")
+                                    .font(.caption.bold())
+                                    .foregroundStyle(.purple)
+                                Text(text)
+                                    .font(.body)
+                                    .textSelection(.enabled)
+                            }
+                            .padding()
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(.purple.opacity(0.06), in: RoundedRectangle(cornerRadius: 12))
+                        }
+                    case "fileOp":
+                        if let path = item.path {
+                            HStack(spacing: 8) {
+                                Image(systemName: fileOpIcon(item.kind))
+                                    .foregroundStyle(.secondary)
+                                Text(path)
+                                    .font(.system(.caption, design: .monospaced))
+                                    .foregroundStyle(.secondary)
+                                    .lineLimit(2)
+                            }
+                            .padding(.horizontal, 4)
+                        }
+                    default:
+                        EmptyView()
+                    }
+                }
+            }
+            .padding()
+        }
+        .navigationTitle(turn.userMessage.isEmpty ? "Turn" : String(turn.userMessage.prefix(40)))
+        .navigationBarTitleDisplayMode(.inline)
+    }
+
+    private func fileOpIcon(_ kind: String?) -> String {
+        switch kind {
+        case "edit":   return "pencil.and.outline"
+        case "write":  return "plus.square"
+        case "bashRm": return "trash"
+        default:       return "doc"
+        }
     }
 }
