@@ -16,6 +16,7 @@
 		A2B3C4D5E6F709A2B3C4D5E6 /* AllowListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B3C4D5E6F70AA2B3C4D5E6 /* AllowListView.swift */; };
 		A2B3C4D5E6F70BA2B3C4D5E6 /* BlockListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B3C4D5E6F70CA2B3C4D5E6 /* BlockListView.swift */; };
 		A2B3C4D5E6F70DA2B3C4D5E6 /* SessionLogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B3C4D5E6F70EA2B3C4D5E6 /* SessionLogView.swift */; };
+		A2B3C4D5E6F70FA2B3C4D5E6 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B3C4D5E6F710A2B3C4D5E6 /* SplashView.swift */; };
 		3871F00E3B20A1E49626738D /* SetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1AF6105FCDF9A7BDD322AFBE /* SetupView.swift */; };
 		416664B8D16BA9FBB016CAD5 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 99321D6D0C80D0F6A13C9B31 /* Preview Assets.xcassets */; };
 		438A3EED148B8136B17EE358 /* MaestroClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 750702F16DA5975CB1C086F8 /* MaestroClient.swift */; };
@@ -59,6 +60,7 @@
 		A2B3C4D5E6F70AA2B3C4D5E6 /* AllowListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllowListView.swift; sourceTree = "<group>"; };
 		A2B3C4D5E6F70CA2B3C4D5E6 /* BlockListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockListView.swift; sourceTree = "<group>"; };
 		A2B3C4D5E6F70EA2B3C4D5E6 /* SessionLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionLogView.swift; sourceTree = "<group>"; };
+		A2B3C4D5E6F710A2B3C4D5E6 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -90,6 +92,7 @@
 				FECD1817E7A0F464ED0E9E15 /* PermissionCard.swift */,
 				A2B3C4D5E6F70EA2B3C4D5E6 /* SessionLogView.swift */,
 				1AF6105FCDF9A7BDD322AFBE /* SetupView.swift */,
+				A2B3C4D5E6F710A2B3C4D5E6 /* SplashView.swift */,
 				8CD077E7062F517206C557E0 /* Preview Content */,
 			);
 			path = MaestroRemote;
@@ -219,6 +222,7 @@
 				27A01AE91A9AD53103D32C47 /* PermissionCard.swift in Sources */,
 				A2B3C4D5E6F70DA2B3C4D5E6 /* SessionLogView.swift in Sources */,
 				3871F00E3B20A1E49626738D /* SetupView.swift in Sources */,
+				A2B3C4D5E6F70FA2B3C4D5E6 /* SplashView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

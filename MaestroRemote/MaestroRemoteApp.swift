@@ -36,10 +36,21 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 @main
 struct MaestroRemoteApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @State private var showSplash = true
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ZStack {
+                ContentView()
+                if showSplash {
+                    SplashView()
+                        .transition(.opacity)
+                }
+            }
+            .task {
+                try? await Task.sleep(for: .seconds(1.2))
+                withAnimation(.easeOut(duration: 0.4)) { showSplash = false }
+            }
         }
     }
 }

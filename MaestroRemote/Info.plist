@@ -32,6 +32,9 @@
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Maestro Remote needs local network access to find and connect to Maestro on your Mac.</string>
 	<key>UILaunchScreen</key>
-	<dict/>
+	<dict>
+		<key>UIColorName</key>
+		<string>LaunchBackground</string>
+	</dict>
 </dict>
 </plist>
