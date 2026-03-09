@@ -17,7 +17,7 @@ struct HomeView: View {
                             title: "Notifications",
                             icon: "bell.badge.fill",
                             color: .orange,
-                            badge: client.pendingPermissions.count
+                            badge: client.pendingPermissions.count + client.pendingQuestions.count
                         )
                     }
                     .buttonStyle(.plain)

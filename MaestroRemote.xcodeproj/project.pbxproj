@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		24FE822FC35790D2C9EDBC91 /* MockURLProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67491675F73D337B125E80D8 /* MockURLProtocol.swift */; };
 		27A01AE91A9AD53103D32C47 /* PermissionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = FECD1817E7A0F464ED0E9E15 /* PermissionCard.swift */; };
+		B3C4D5E6F7081A2B3C4D5E6F /* QuestionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3C4D5E6F7082A2B3C4D5E6F /* QuestionCard.swift */; };
 		A2B3C4D5E6F701A2B3C4D5E6 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B3C4D5E6F702A2B3C4D5E6 /* HomeView.swift */; };
 		A2B3C4D5E6F703A2B3C4D5E6 /* NotificationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B3C4D5E6F704A2B3C4D5E6 /* NotificationView.swift */; };
 		A2B3C4D5E6F705A2B3C4D5E6 /* HistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B3C4D5E6F706A2B3C4D5E6 /* HistoryView.swift */; };
@@ -52,6 +53,7 @@
 		99321D6D0C80D0F6A13C9B31 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		F11B1556CEFDD2107E28099A /* MaestroRemoteApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaestroRemoteApp.swift; sourceTree = "<group>"; };
 		FECD1817E7A0F464ED0E9E15 /* PermissionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionCard.swift; sourceTree = "<group>"; };
+		B3C4D5E6F7082A2B3C4D5E6F /* QuestionCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuestionCard.swift; sourceTree = "<group>"; };
 		D8E9F0A1B2C3D4E5F6071829 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		A2B3C4D5E6F702A2B3C4D5E6 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		A2B3C4D5E6F704A2B3C4D5E6 /* NotificationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationView.swift; sourceTree = "<group>"; };
@@ -90,6 +92,7 @@
 				D8E9F0A1B2C3D4E5F6071829 /* NotificationManager.swift */,
 				A2B3C4D5E6F704A2B3C4D5E6 /* NotificationView.swift */,
 				FECD1817E7A0F464ED0E9E15 /* PermissionCard.swift */,
+				B3C4D5E6F7082A2B3C4D5E6F /* QuestionCard.swift */,
 				A2B3C4D5E6F70EA2B3C4D5E6 /* SessionLogView.swift */,
 				1AF6105FCDF9A7BDD322AFBE /* SetupView.swift */,
 				A2B3C4D5E6F710A2B3C4D5E6 /* SplashView.swift */,
@@ -220,6 +223,7 @@
 				C7D8E9F0A1B2C3D4E5F60719 /* NotificationManager.swift in Sources */,
 				A2B3C4D5E6F703A2B3C4D5E6 /* NotificationView.swift in Sources */,
 				27A01AE91A9AD53103D32C47 /* PermissionCard.swift in Sources */,
+				B3C4D5E6F7081A2B3C4D5E6F /* QuestionCard.swift in Sources */,
 				A2B3C4D5E6F70DA2B3C4D5E6 /* SessionLogView.swift in Sources */,
 				3871F00E3B20A1E49626738D /* SetupView.swift in Sources */,
 				A2B3C4D5E6F70FA2B3C4D5E6 /* SplashView.swift in Sources */,

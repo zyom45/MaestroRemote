@@ -5,6 +5,7 @@ import UIKit
 @MainActor
 class MaestroClient: ObservableObject {
     @Published var pendingPermissions: [Permission] = []
+    @Published var pendingQuestions: [Question] = []
     @Published var isConnected = false
     @Published var alwaysYes = false
     @Published var autoPilot = false
@@ -49,6 +50,7 @@ class MaestroClient: ObservableObject {
             }
             let decoded = try JSONDecoder().decode(PendingResponse.self, from: data)
             pendingPermissions = decoded.pending
+            pendingQuestions = decoded.questions ?? []
             alwaysYes = decoded.alwaysYes
             autoPilot = decoded.autoPilot
             let wasConnected = isConnected
@@ -91,6 +93,23 @@ class MaestroClient: ObservableObject {
                json["ok"] as? Bool == true || json["status"] as? String == "ok" {
                 pendingPermissions.removeAll { $0.id == id }
                 NotificationManager.shared.cancelNotification(for: id)
+                return true
+            }
+        } catch {}
+        return false
+    }
+
+    func respondToQuestion(id: UUID, text: String) async -> Bool {
+        guard let url = URL(string: "\(baseURL)/respond-question") else { return false }
+        var req = URLRequest(url: url)
+        req.httpMethod = "POST"
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.httpBody = try? JSONSerialization.data(withJSONObject: ["id": id.uuidString, "text": text])
+        do {
+            let (data, _) = try await session.data(for: req)
+            if let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+               json["ok"] as? Bool == true {
+                pendingQuestions.removeAll { $0.id == id }
                 return true
             }
         } catch {}
@@ -169,8 +188,24 @@ class MaestroClient: ObservableObject {
         }
     }
 
+    struct Question: Identifiable, Codable {
+        let id: UUID
+        let message: String
+        let label: String
+        let cwd: String
+        let sessionId: String
+        let requiresTerminalInput: Bool
+        let enqueuedAt: String
+
+        var projectName: String {
+            guard !cwd.isEmpty else { return label }
+            return URL(fileURLWithPath: cwd).lastPathComponent
+        }
+    }
+
     private struct PendingResponse: Codable {
         let pending: [Permission]
+        let questions: [Question]?
         let alwaysYes: Bool
         let autoPilot: Bool
     }

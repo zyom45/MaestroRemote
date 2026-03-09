@@ -4,14 +4,18 @@ struct NotificationView: View {
     @EnvironmentObject var client: MaestroClient
     @State private var showSetup = false
 
+    private var hasPending: Bool {
+        !client.pendingPermissions.isEmpty || !client.pendingQuestions.isEmpty
+    }
+
     var body: some View {
         Group {
             if !client.isConnected {
                 disconnectedView
-            } else if client.pendingPermissions.isEmpty {
+            } else if !hasPending {
                 idleView
             } else {
-                permissionList
+                pendingList
             }
         }
         .navigationTitle("Notifications")
@@ -88,12 +92,26 @@ struct NotificationView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    // MARK: - Permission List
+    // MARK: - Pending List (permissions + questions)
 
-    private var permissionList: some View {
-        List(client.pendingPermissions) { perm in
-            PermissionCard(perm: perm)
-                .environmentObject(client)
+    private var pendingList: some View {
+        List {
+            if !client.pendingQuestions.isEmpty {
+                Section("Questions") {
+                    ForEach(client.pendingQuestions) { q in
+                        QuestionCard(question: q)
+                            .environmentObject(client)
+                    }
+                }
+            }
+            if !client.pendingPermissions.isEmpty {
+                Section("Permissions") {
+                    ForEach(client.pendingPermissions) { perm in
+                        PermissionCard(perm: perm)
+                            .environmentObject(client)
+                    }
+                }
+            }
         }
         .listStyle(.insetGrouped)
         .refreshable { await client.fetchPending() }
