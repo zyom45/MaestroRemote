@@ -2,130 +2,224 @@ import SwiftUI
 
 struct HomeView: View {
     @EnvironmentObject var client: MaestroClient
-    @State private var showSetup = false
-
-    private let columns = [GridItem(.flexible()), GridItem(.flexible())]
+    @State private var sessions: [MaestroClient.SessionSummary] = []
+    @State private var isLoading = false
+    @State private var showSettings = false
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                LazyVGrid(columns: columns, spacing: 16) {
-                    NavigationLink {
-                        NotificationView().environmentObject(client)
-                    } label: {
-                        FeatureCard(
-                            title: "Notifications",
-                            icon: "bell.badge.fill",
-                            color: .orange,
-                            badge: client.pendingPermissions.count + client.pendingQuestions.count
-                        )
+            sessionList
+                .navigationTitle("Maestro")
+                .navigationBarTitleDisplayMode(.large)
+                .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Circle()
+                            .fill(client.isConnected ? Color.green : Color.red)
+                            .frame(width: 10, height: 10)
                     }
-                    .buttonStyle(.plain)
-
-                    NavigationLink {
-                        SessionLogView().environmentObject(client)
-                    } label: {
-                        FeatureCard(title: "Session Log",
-                                    icon: "bubble.left.and.bubble.right.fill",
-                                    color: .blue)
-                    }
-                    .buttonStyle(.plain)
-
-                    NavigationLink {
-                        ActivityView().environmentObject(client)
-                    } label: {
-                        FeatureCard(title: "Activity",
-                                    icon: "bolt.fill",
-                                    color: .green)
-                    }
-                    .buttonStyle(.plain)
-
-                    NavigationLink {
-                        HistoryView().environmentObject(client)
-                    } label: {
-                        FeatureCard(title: "History",
-                                    icon: "clock.arrow.circlepath",
-                                    color: .purple)
-                    }
-                    .buttonStyle(.plain)
-
-                    NavigationLink {
-                        AllowListView().environmentObject(client)
-                    } label: {
-                        FeatureCard(title: "Allow List",
-                                    icon: "checkmark.shield.fill",
-                                    color: .teal)
-                    }
-                    .buttonStyle(.plain)
-
-                    NavigationLink {
-                        BlockListView().environmentObject(client)
-                    } label: {
-                        FeatureCard(title: "Block List",
-                                    icon: "xmark.shield.fill",
-                                    color: .red)
-                    }
-                    .buttonStyle(.plain)
-                }
-                .padding()
-            }
-            .navigationTitle("Maestro")
-            .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) { connectionBadge }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button { showSetup = true } label: {
-                        Image(systemName: "gear")
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button { showSettings = true } label: {
+                            Image(systemName: "gear")
+                        }
                     }
                 }
+        }
+        .sheet(isPresented: $showSettings) {
+            NavigationStack {
+                SettingsView().environmentObject(client)
             }
         }
-        .sheet(isPresented: $showSetup) {
-            SetupView(client: client)
+        .task { await load() }
+    }
+
+    // MARK: - Computed
+
+    private func pendingPerms(for name: String) -> [MaestroClient.Permission] {
+        client.pendingPermissions.filter {
+            URL(fileURLWithPath: $0.cwd).lastPathComponent == name
         }
     }
 
-    private var connectionBadge: some View {
-        Circle()
-            .fill(client.isConnected ? Color.green : Color.red)
-            .frame(width: 10, height: 10)
+    private func pendingQuestions(for name: String) -> [MaestroClient.Question] {
+        client.pendingQuestions.filter {
+            URL(fileURLWithPath: $0.cwd).lastPathComponent == name
+        }
+    }
+
+    private func totalPending(for name: String) -> Int {
+        pendingPerms(for: name).count + pendingQuestions(for: name).count
+    }
+
+    /// Project names from pending items that have no matching session
+    private var orphanedProjectNames: [String] {
+        let sessionNames = Set(sessions.map { $0.projectName })
+        let all = (client.pendingPermissions.map { URL(fileURLWithPath: $0.cwd).lastPathComponent }
+                 + client.pendingQuestions.map { URL(fileURLWithPath: $0.cwd).lastPathComponent })
+        return Array(Set(all).subtracting(sessionNames)).sorted()
+    }
+
+    /// Sessions that have at least one pending item, sorted most-recent first
+    private var activeSessions: [MaestroClient.SessionSummary] {
+        sessions.filter { totalPending(for: $0.projectName) > 0 }
+                .sorted { $0.modifiedAt > $1.modifiedAt }
+    }
+
+    /// Sessions with no pending items, sorted most-recent first
+    private var recentSessions: [MaestroClient.SessionSummary] {
+        sessions.filter { totalPending(for: $0.projectName) == 0 }
+                .sorted { $0.modifiedAt > $1.modifiedAt }
+    }
+
+    private func rowSubtitle(for name: String) -> String? {
+        let questions = pendingQuestions(for: name)
+        let perms = pendingPerms(for: name)
+        if let q = questions.first {
+            return "Question: \(q.message.prefix(60))"
+        }
+        if let p = perms.first {
+            return "Waiting: \(p.toolName)"
+        }
+        return nil
+    }
+
+    // MARK: - Views
+
+    private var sessionList: some View {
+        List {
+            // Active section: orphaned pending + sessions with pending
+            if !orphanedProjectNames.isEmpty || !activeSessions.isEmpty {
+                Section("Active") {
+                    ForEach(orphanedProjectNames, id: \.self) { name in
+                        NavigationLink {
+                            SessionDetailView(projectName: name, session: nil)
+                                .environmentObject(client)
+                        } label: {
+                            SessionRowLabel(
+                                projectName: name,
+                                subtitle: rowSubtitle(for: name) ?? "",
+                                pendingCount: totalPending(for: name)
+                            )
+                        }
+                    }
+                    ForEach(activeSessions) { session in
+                        NavigationLink {
+                            SessionDetailView(projectName: session.projectName, session: session)
+                                .environmentObject(client)
+                        } label: {
+                            SessionRowLabel(
+                                projectName: session.projectName,
+                                subtitle: rowSubtitle(for: session.projectName) ?? session.projectDir,
+                                timestamp: session.modifiedAt,
+                                pendingCount: totalPending(for: session.projectName)
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Recent section: sessions without pending
+            if !recentSessions.isEmpty {
+                Section("Recent") {
+                    ForEach(recentSessions) { session in
+                        NavigationLink {
+                            SessionDetailView(projectName: session.projectName, session: session)
+                                .environmentObject(client)
+                        } label: {
+                            SessionRowLabel(
+                                projectName: session.projectName,
+                                subtitle: session.projectDir,
+                                timestamp: session.modifiedAt
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Empty state
+            if sessions.isEmpty && orphanedProjectNames.isEmpty {
+                if isLoading {
+                    HStack { Spacer(); ProgressView(); Spacer() }
+                        .listRowBackground(Color.clear)
+                } else if !client.isConnected {
+                    VStack(spacing: 8) {
+                        Image(systemName: "wifi.slash")
+                            .font(.system(size: 32))
+                            .foregroundStyle(.red)
+                        Text("Not Connected")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        Text("Open Settings to configure the server address.")
+                            .font(.caption)
+                            .foregroundStyle(.tertiary)
+                            .multilineTextAlignment(.center)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .listRowBackground(Color.clear)
+                } else {
+                    Text("No sessions yet")
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .listRowBackground(Color.clear)
+                }
+            }
+        }
+        .listStyle(.insetGrouped)
+        .refreshable { await load() }
+    }
+
+    private func load() async {
+        isLoading = true
+        let result = await client.fetchSessions()
+        sessions = result.items
+        isLoading = false
     }
 }
 
-// MARK: - Feature Card
+// MARK: - Row Label
 
-struct FeatureCard: View {
-    let title: String
-    let icon: String
-    let color: Color
-    var badge: Int = 0
+private struct SessionRowLabel: View {
+    let projectName: String
+    let subtitle: String
+    var timestamp: String? = nil
+    var pendingCount: Int = 0
 
     var body: some View {
-        VStack(spacing: 14) {
-            ZStack(alignment: .topTrailing) {
-                Image(systemName: icon)
-                    .font(.system(size: 36, weight: .medium))
-                    .symbolRenderingMode(.hierarchical)
-                    .foregroundStyle(color)
-                    .frame(width: 52, height: 52)
-
-                if badge > 0 {
-                    Text("\(min(badge, 99))")
-                        .font(.caption2.bold())
-                        .foregroundStyle(.white)
-                        .padding(.horizontal, 5)
-                        .padding(.vertical, 2)
-                        .background(.red, in: Capsule())
-                        .offset(x: 14, y: -4)
+        HStack(alignment: .top, spacing: 12) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(projectName)
+                    .font(.headline)
+                if !subtitle.isEmpty {
+                    Text(subtitle)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                }
+                if let ts = timestamp {
+                    Text(formatTimestamp(ts))
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
                 }
             }
-
-            Text(title)
-                .font(.system(.subheadline, weight: .semibold))
-                .foregroundStyle(.primary)
+            Spacer()
+            if pendingCount > 0 {
+                Text("\(pendingCount)")
+                    .font(.caption2.bold())
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 3)
+                    .background(.orange, in: Capsule())
+            }
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 28)
-        .background(.quaternary, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .padding(.vertical, 4)
+    }
+
+    private func formatTimestamp(_ iso: String) -> String {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        let date = formatter.date(from: iso) ?? ISO8601DateFormatter().date(from: iso) ?? Date()
+        let rel = RelativeDateTimeFormatter()
+        rel.unitsStyle = .abbreviated
+        return rel.localizedString(for: date, relativeTo: Date())
     }
 }
