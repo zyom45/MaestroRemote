@@ -4,6 +4,7 @@ struct HomeView: View {
     @EnvironmentObject var client: MaestroClient
     @State private var sessions: [MaestroClient.SessionSummary] = []
     @State private var isLoading = false
+    @State private var unavailable = false
     @State private var showSettings = false
 
     var body: some View {
@@ -156,6 +157,22 @@ struct HomeView: View {
                     .frame(maxWidth: .infinity)
                     .padding()
                     .listRowBackground(Color.clear)
+                } else if unavailable {
+                    VStack(spacing: 8) {
+                        Image(systemName: "arrow.up.circle")
+                            .font(.system(size: 32))
+                            .foregroundStyle(.orange)
+                        Text("Requires Maestro Update")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                        Text("Update Maestro on your Mac to enable session history.")
+                            .font(.caption)
+                            .foregroundStyle(.tertiary)
+                            .multilineTextAlignment(.center)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .listRowBackground(Color.clear)
                 } else {
                     Text("No sessions yet")
                         .foregroundStyle(.secondary)
@@ -171,6 +188,7 @@ struct HomeView: View {
     private func load() async {
         isLoading = true
         let result = await client.fetchSessions()
+        unavailable = result.unavailable
         sessions = result.items
         isLoading = false
     }
