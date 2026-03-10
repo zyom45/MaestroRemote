@@ -23,6 +23,44 @@ struct MarkdownView: View {
             CodeBlockView(language: lang, code: code)
         case .table(let headers, let rows):
             MDTableView(headers: headers, rows: rows)
+        case .heading(let level, let text):
+            HeadingView(level: level, text: text)
+        case .rule:
+            Divider()
+                .padding(.vertical, 2)
+        }
+    }
+}
+
+// MARK: - Heading
+
+private struct HeadingView: View {
+    let level: Int
+    let text: String
+
+    var body: some View {
+        if let attr = try? AttributedString(
+            markdown: text,
+            options: .init(interpretedSyntax: .inlineOnlyPreservingWhitespace)
+        ) {
+            Text(attr)
+                .font(font)
+                .textSelection(.enabled)
+                .fixedSize(horizontal: false, vertical: true)
+        } else {
+            Text(text)
+                .font(font)
+                .textSelection(.enabled)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private var font: Font {
+        switch level {
+        case 1: return .title2.bold()
+        case 2: return .title3.bold()
+        case 3: return .headline
+        default: return .subheadline.bold()
         }
     }
 }
@@ -158,6 +196,8 @@ private enum MDBlock {
     case prose(String)
     case code(language: String, code: String)
     case table(headers: [String], rows: [[String]])
+    case heading(level: Int, text: String)
+    case rule
 }
 
 private func parseBlocks(_ text: String) -> [MDBlock] {
@@ -170,7 +210,7 @@ private func parseBlocks(_ text: String) -> [MDBlock] {
         let joined = proseLines.joined(separator: "\n")
             .trimmingCharacters(in: .whitespacesAndNewlines)
         if !joined.isEmpty {
-            result.append(contentsOf: extractTables(joined))
+            result.append(contentsOf: splitProse(joined))
         }
         proseLines = []
     }
@@ -197,8 +237,8 @@ private func parseBlocks(_ text: String) -> [MDBlock] {
     return result
 }
 
-/// Split prose into sub-blocks, pulling out any Markdown tables
-private func extractTables(_ text: String) -> [MDBlock] {
+/// Split prose text into headings, horizontal rules, tables, and plain prose
+private func splitProse(_ text: String) -> [MDBlock] {
     var result: [MDBlock] = []
     let lines = text.components(separatedBy: "\n")
     var i = 0
@@ -212,12 +252,26 @@ private func extractTables(_ text: String) -> [MDBlock] {
     }
 
     while i < lines.count {
-        // A table starts with a pipe line followed by a separator line
-        if looksLikeTableRow(lines[i])
-            && i + 1 < lines.count
-            && isSeparator(lines[i + 1]) {
+        let line = lines[i]
+
+        // Heading: line starts with one or more '#'
+        if let (level, headingText) = parseHeading(line) {
             flushProse()
-            let headers = parseCells(lines[i])
+            result.append(.heading(level: level, text: headingText))
+            i += 1
+
+        // Horizontal rule: line is only '-', '*', or '_' (3+)
+        } else if isHorizontalRule(line) {
+            flushProse()
+            result.append(.rule)
+            i += 1
+
+        // Table: pipe line followed by separator line
+        } else if looksLikeTableRow(line)
+                    && i + 1 < lines.count
+                    && isSeparator(lines[i + 1]) {
+            flushProse()
+            let headers = parseCells(line)
             i += 2   // skip header + separator
             var rows: [[String]] = []
             while i < lines.count && looksLikeTableRow(lines[i]) {
@@ -225,13 +279,36 @@ private func extractTables(_ text: String) -> [MDBlock] {
                 i += 1
             }
             result.append(.table(headers: headers, rows: rows))
+
         } else {
-            proseLines.append(lines[i])
+            proseLines.append(line)
             i += 1
         }
     }
     flushProse()
     return result
+}
+
+private func parseHeading(_ line: String) -> (level: Int, text: String)? {
+    guard line.hasPrefix("#") else { return nil }
+    var level = 0
+    var rest = line[line.startIndex...]
+    while rest.first == "#" {
+        level += 1
+        rest = rest.dropFirst()
+    }
+    guard level <= 6, rest.first == " " || rest.isEmpty else { return nil }
+    let text = String(rest).trimmingCharacters(in: .whitespaces)
+    return text.isEmpty ? nil : (level, text)
+}
+
+private func isHorizontalRule(_ line: String) -> Bool {
+    let trimmed = line.trimmingCharacters(in: .whitespaces)
+    guard trimmed.count >= 3 else { return false }
+    let nonSpace = trimmed.filter { !$0.isWhitespace }
+    guard !nonSpace.isEmpty else { return false }
+    let ch = nonSpace.first!
+    return (ch == "-" || ch == "*" || ch == "_") && nonSpace.allSatisfy { $0 == ch }
 }
 
 private func looksLikeTableRow(_ line: String) -> Bool {
