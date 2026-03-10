@@ -141,11 +141,11 @@ private struct TurnBubble: View {
                     Image(systemName: "sparkles")
                         .font(.caption)
                         .foregroundStyle(.purple)
-                        .padding(.top, 12)
+                        .padding(.top, 4)
                     VStack(alignment: .leading, spacing: 6) {
                         ForEach(Array(textItems.enumerated()), id: \.offset) { _, item in
                             if let text = item.content {
-                                Text(text)
+                                MarkdownView(text: text)
                                     .font(.body)
                                     .padding(.horizontal, 14)
                                     .padding(.vertical, 10)

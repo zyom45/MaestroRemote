@@ -27,6 +27,7 @@
 		C7D8E9F0A1B2C3D4E5F60719 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8E9F0A1B2C3D4E5F6071829 /* NotificationManager.swift */; };
 		BAF6CE1C548EA51DDDA2F802 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 974466D4F99EA7F651A998C7 /* Assets.xcassets */; };
 		EBA4C4EA0F83A72EA73F0962 /* BonjourBrowser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 13E269E9C861993AB307EC61 /* BonjourBrowser.swift */; };
+		A2B3C4D5E6F715A2B3C4D5E6 /* MarkdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B3C4D5E6F716A2B3C4D5E6 /* MarkdownView.swift */; };
 		A2B3C4D5E6F712A2B3C4D5E6 /* SessionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B3C4D5E6F711A2B3C4D5E6 /* SessionDetailView.swift */; };
 		A2B3C4D5E6F714A2B3C4D5E6 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2B3C4D5E6F713A2B3C4D5E6 /* SettingsView.swift */; };
 /* End PBXBuildFile section */
@@ -65,6 +66,7 @@
 		A2B3C4D5E6F70CA2B3C4D5E6 /* BlockListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlockListView.swift; sourceTree = "<group>"; };
 		A2B3C4D5E6F70EA2B3C4D5E6 /* SessionLogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionLogView.swift; sourceTree = "<group>"; };
 		A2B3C4D5E6F710A2B3C4D5E6 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
+		A2B3C4D5E6F716A2B3C4D5E6 /* MarkdownView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkdownView.swift; sourceTree = "<group>"; };
 		A2B3C4D5E6F711A2B3C4D5E6 /* SessionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDetailView.swift; sourceTree = "<group>"; };
 		A2B3C4D5E6F713A2B3C4D5E6 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -97,6 +99,7 @@
 				A2B3C4D5E6F704A2B3C4D5E6 /* NotificationView.swift */,
 				FECD1817E7A0F464ED0E9E15 /* PermissionCard.swift */,
 				B3C4D5E6F7082A2B3C4D5E6F /* QuestionCard.swift */,
+				A2B3C4D5E6F716A2B3C4D5E6 /* MarkdownView.swift */,
 				A2B3C4D5E6F711A2B3C4D5E6 /* SessionDetailView.swift */,
 				A2B3C4D5E6F70EA2B3C4D5E6 /* SessionLogView.swift */,
 				1AF6105FCDF9A7BDD322AFBE /* SetupView.swift */,
@@ -230,6 +233,7 @@
 				A2B3C4D5E6F703A2B3C4D5E6 /* NotificationView.swift in Sources */,
 				27A01AE91A9AD53103D32C47 /* PermissionCard.swift in Sources */,
 				B3C4D5E6F7081A2B3C4D5E6F /* QuestionCard.swift in Sources */,
+				A2B3C4D5E6F715A2B3C4D5E6 /* MarkdownView.swift in Sources */,
 				A2B3C4D5E6F712A2B3C4D5E6 /* SessionDetailView.swift in Sources */,
 				A2B3C4D5E6F70DA2B3C4D5E6 /* SessionLogView.swift in Sources */,
 				3871F00E3B20A1E49626738D /* SetupView.swift in Sources */,
