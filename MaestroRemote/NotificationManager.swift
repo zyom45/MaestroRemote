@@ -71,7 +71,8 @@ final class NotificationManager: NSObject {
         req.setValue("application/json", forHTTPHeaderField: "Content-Type")
         req.httpBody = try? JSONSerialization.data(withJSONObject: [
             "deviceToken": token,
-            "bundleId": "com.maestro.MaestroRemote"
+            "bundleId": "com.maestro.MaestroRemote",
+            "notificationsEnabled": client?.notificationsEnabled ?? true
         ])
         _ = try? await URLSession.shared.data(for: req)
     }
@@ -81,6 +82,7 @@ final class NotificationManager: NSObject {
 
     /// バックグラウンド移行時: 未通知の pending を即時発火
     func notifyAllPending(_ permissions: [MaestroClient.Permission], baseURL: String) {
+        guard client?.notificationsEnabled != false else { return }
         let total = permissions.count
         for perm in permissions {
             scheduleLocalNotification(for: perm, baseURL: baseURL, badge: total)
@@ -89,6 +91,7 @@ final class NotificationManager: NSObject {
 
     /// fetchPending() から呼ばれる（バックグラウンド中のみ）
     func notify(for permission: MaestroClient.Permission, baseURL: String) {
+        guard client?.notificationsEnabled != false else { return }
         scheduleLocalNotification(for: permission, baseURL: baseURL, badge: 1)
     }
 

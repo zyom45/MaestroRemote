@@ -32,6 +32,19 @@ struct SettingsView: View {
                 }
             }
 
+            Section {
+                Toggle(isOn: Binding(
+                    get: { client.notificationsEnabled },
+                    set: { enabled in Task { await client.setNotificationsEnabled(enabled) } }
+                )) {
+                    Label("Push Notifications", systemImage: "bell.fill")
+                }
+            } header: {
+                Text("Notifications")
+            } footer: {
+                Text("When off, Maestro will not send push notifications to this device.")
+            }
+
             Section("Connection") {
                 HStack {
                     Label("Status", systemImage: "circle.fill")

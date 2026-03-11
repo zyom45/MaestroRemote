@@ -15,6 +15,11 @@ class MaestroClient: ObservableObject {
         didSet { UserDefaults.standard.set(baseURL, forKey: "maestro.baseURL") }
     }
 
+    @Published var notificationsEnabled: Bool =
+        UserDefaults.standard.object(forKey: "maestro.notificationsEnabled") as? Bool ?? true {
+        didSet { UserDefaults.standard.set(notificationsEnabled, forKey: "maestro.notificationsEnabled") }
+    }
+
     /// テストで差し替え可能な URLSession
     static var urlSession: URLSession = .shared
     private var session: URLSession { MaestroClient.urlSession }
@@ -67,10 +72,16 @@ class MaestroClient: ObservableObject {
                 }
             }
 
-            // 接続確立時: 保存済み APNs トークンを Mac へ送信
+            // 接続確立時: 保存済み APNs トークンと通知設定を Mac へ送信
             if !wasConnected {
                 let url = baseURL
-                Task { await NotificationManager.shared.sendStoredTokenIfNeeded(baseURL: url) }
+                let enabled = notificationsEnabled
+                Task {
+                    await NotificationManager.shared.sendStoredTokenIfNeeded(baseURL: url)
+                    if !enabled, let token = NotificationManager.shared.deviceToken {
+                        await self.syncNotificationConfig(token: token, enabled: false, baseURL: url)
+                    }
+                }
             }
         } catch {
             isConnected = false
@@ -114,6 +125,24 @@ class MaestroClient: ObservableObject {
             }
         } catch {}
         return false
+    }
+
+    func setNotificationsEnabled(_ enabled: Bool) async {
+        notificationsEnabled = enabled
+        guard !baseURL.isEmpty, let token = NotificationManager.shared.deviceToken, !token.isEmpty else { return }
+        await syncNotificationConfig(token: token, enabled: enabled, baseURL: baseURL)
+    }
+
+    private func syncNotificationConfig(token: String, enabled: Bool, baseURL: String) async {
+        guard let url = URL(string: "\(baseURL)/api/notifications/config") else { return }
+        var req = URLRequest(url: url)
+        req.httpMethod = "POST"
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.httpBody = try? JSONSerialization.data(withJSONObject: [
+            "deviceToken": token,
+            "notificationsEnabled": enabled
+        ])
+        _ = try? await session.data(for: req)
     }
 
     func setBaseURL(_ url: String) {
